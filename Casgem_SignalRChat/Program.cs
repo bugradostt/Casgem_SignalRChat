@@ -1,10 +1,20 @@
+using Casgem_SignalRChat.Hubs;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews().AddRazorRuntimeCompilation();
 
 builder.Services.AddSignalR();
-
+builder.Services.AddCors(options=>{
+	options.AddDefaultPolicy(
+		builder =>{
+			builder.AllowAnyOrigin()
+			.AllowAnyHeader()
+			.AllowAnyMethod();
+		}
+	);
+});
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -21,7 +31,8 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthorization();
-
+app.UseCors();
+app.MapHub<ChatHub>("/chatHub");
 app.MapControllerRoute(
 	name: "default",
 	pattern: "{controller=Home}/{action=Index}/{id?}");
